@@ -1,0 +1,600 @@
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
+TokenLens is a small educational project for understanding how language model tokenizers work.
+A tokenizer converts text into tokens, and tokens are represented by integer IDs.
+Modern language models do not usually process raw words directly. They process token IDs and then map those IDs into vectors called embeddings.
+
+Byte Pair Encoding, usually called BPE, is a subword tokenization algorithm.
+A simple byte-level BPE tokenizer starts with a vocabulary containing all 256 possible byte values.
+It then looks at adjacent pairs of tokens in a training corpus and counts how often every pair occurs.
+The most frequent pair is merged into a new token.
+That new token receives a new integer ID and its byte sequence is the concatenation of the two old token byte sequences.
+The process repeats until the desired vocabulary size is reached.
+
+For example, suppose the training data contains the sequence a b a b a b many times.
+The pair a b may be very frequent, so BPE can create a new token representing a b.
+After that merge, the sequence can contain the new token together with other tokens.
+Later merges can create larger pieces such as common words, word fragments, punctuation patterns, or whitespace patterns.
+
+Training and inference are different.
+During training, the tokenizer learns a vocabulary and an ordered list of merge rules from a corpus.
+During inference, the tokenizer does not learn anything new.
+It converts new text into UTF-8 bytes and applies the learned merge rules to produce token IDs.
+
+Byte-level tokenization is useful because every Unicode string can be represented as UTF-8 bytes.
+This means the tokenizer does not need a separate unknown-word token for every possible word.
+Rare words can be represented using smaller byte or subword pieces.
+
+Token IDs are not the same thing as token text.
+A token ID is simply an integer used to look up a token.
+A token can represent one byte, several bytes, a complete word, part of a word, whitespace, punctuation, or another byte sequence.
+
+The TokenLens interface visualizes the tokens produced by the tokenizer.
+It can show each token, its ID, its UTF-8 bytes, token counts, character counts, word counts, context-window usage, and comparisons between two pieces of text.
+
+Natural language contains repeated patterns.
+Common words such as the, and, is, to, of, language, model, token, and tokenizer occur frequently.
+Programming text also contains repeated patterns such as import, return, function, class, const, async, and HTTP.
+BPE can discover repeated byte sequences without being explicitly told which words or subwords are important.
+
+The same idea works for code.
+A source file is text, so it can be converted into UTF-8 bytes and tokenized using the same basic byte-level process.
+The resulting tokens may correspond to identifiers, operators, punctuation, spaces, keywords, or fragments of identifiers.
+
+Different vocabulary sizes produce different tokenizations.
+A smaller vocabulary usually means fewer learned merge rules and more tokens for the same text.
+A larger vocabulary can represent longer repeated byte sequences as single tokens.
+There is a tradeoff between vocabulary size, memory, sequence length, and coverage.
+
+Context windows are measured in tokens rather than characters.
+If a model has a context window of 8192 tokens, the input and generated output must fit within that token budget.
+Therefore tokenization affects how much information can fit into a model context.
+
+The goal of TokenLens is not to replace production tokenizers.
+The goal is to make the tokenizer process visible.
+By implementing BPE from scratch, we can inspect the training process, learned merge rules, vocabulary entries, token IDs, and the final encoding step.
+
+A tokenizer is one stage of an LLM pipeline.
+The simplified pipeline is text to tokenizer to token IDs to embeddings to transformer layers to output token IDs to decoding.
+Understanding tokenization makes the later parts of the pipeline easier to reason about.
+
+BPE does not understand the meaning of language.
+It is a statistical compression-like procedure that learns repeated adjacent patterns from the training data.
+The fact that useful words and subwords often emerge is a consequence of repeated patterns in language.
+
+Whitespace can also become part of a token.
+Punctuation can become part of a token.
+Unicode characters may require multiple UTF-8 bytes.
+A single visible character therefore does not necessarily correspond to a single token or a single byte.
+
+The TokenLens backend uses Python and FastAPI.
+The frontend uses React.
+The backend performs tokenization and returns JSON.
+The frontend displays the result interactively.
+
+Learning tokenization by building a tokenizer is useful for AI engineering because it connects natural language processing concepts with actual software.
+The implementation contains data structures, frequency counting, greedy merging, serialization, encoding, decoding, and API integration.
+
