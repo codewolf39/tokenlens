@@ -1,6 +1,6 @@
 # TokenLens 🔍
 
-> **See how an LLM sees your text.**
+> **See how an LLM sees your text.** --> Live link: https://tokenlens-fuj6.vercel.app/
 
 TokenLens is an interactive LLM tokenizer visualizer built to make tokenization easier to understand by showing what happens to text before it reaches a language model.
 
