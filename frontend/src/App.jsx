@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 function App() {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
@@ -20,7 +22,7 @@ function App() {
     setSelectedToken(null);
 
     try {
-      const response = await fetch("http://localhost:8000/tokenize", {
+      const response = await fetch(`${API_URL}/tokenize`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +48,7 @@ function App() {
 
     try {
       const [firstResponse, secondResponse] = await Promise.all([
-        fetch("http://localhost:8000/tokenize", {
+        fetch(`${API_URL}/tokenize`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +57,7 @@ function App() {
             text: text,
           }),
         }),
-        fetch("http://localhost:8000/tokenize", {
+        fetch(`${API_URL}/tokenize`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
