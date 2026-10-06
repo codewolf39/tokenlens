@@ -6,7 +6,7 @@ TokenLens is an interactive LLM tokenizer visualizer built to make tokenization 
 
 Instead of treating tokenization as a black box, TokenLens exposes individual tokens, token IDs, UTF-8 bytes, token statistics, and context-window usage.
 
-The project also includes a **from-scratch byte-level BPE tokenizer** implemented in Python, so the tokenization process can be studied and experimented with directly.
+The project also includes a **from-scratch byte-level BPE tokenizer** implemented in Python, so the tokenization process can be studied and experimented with directly. It works very well.
 
 ---
 
